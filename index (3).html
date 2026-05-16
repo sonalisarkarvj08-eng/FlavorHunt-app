@@ -1,0 +1,2106 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>FlavorHunt — Discover Your Next Obsession</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,300;0,700;0,900;1,300;1,700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+
+<style>
+/* ===========================
+   CSS CUSTOM PROPERTIES
+=========================== */
+:root {
+  --bg: #0d0d0f;
+  --bg-alt: #141417;
+  --bg-card: #1a1a1f;
+  --bg-glass: rgba(255,255,255,0.04);
+  --border: rgba(255,255,255,0.08);
+  --border-hover: rgba(255,255,255,0.18);
+  --text: #f0ede8;
+  --text-muted: #8a8591;
+  --text-faint: #4a4758;
+  --accent: #ff6b35;
+  --accent2: #ffd166;
+  --accent3: #06d6a0;
+  --accent-glow: rgba(255,107,53,0.25);
+  --radius: 18px;
+  --radius-sm: 10px;
+  --radius-pill: 999px;
+  --shadow: 0 8px 40px rgba(0,0,0,0.5);
+  --shadow-sm: 0 2px 12px rgba(0,0,0,0.3);
+  --transition: 0.35s cubic-bezier(0.4,0,0.2,1);
+  --font-display: 'Fraunces', Georgia, serif;
+  --font-body: 'DM Sans', system-ui, sans-serif;
+  --nav-h: 72px;
+}
+
+[data-theme="light"] {
+  --bg: #faf8f5;
+  --bg-alt: #f2ede6;
+  --bg-card: #ffffff;
+  --bg-glass: rgba(0,0,0,0.03);
+  --border: rgba(0,0,0,0.08);
+  --border-hover: rgba(0,0,0,0.18);
+  --text: #1a1614;
+  --text-muted: #6b6570;
+  --text-faint: #bbb5c0;
+  --accent-glow: rgba(255,107,53,0.15);
+  --shadow: 0 8px 40px rgba(0,0,0,0.12);
+  --shadow-sm: 0 2px 12px rgba(0,0,0,0.07);
+}
+
+/* ===========================
+   RESET & BASE
+=========================== */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html { scroll-behavior: smooth; font-size: 16px; }
+
+body {
+  font-family: var(--font-body);
+  background: var(--bg);
+  color: var(--text);
+  overflow-x: hidden;
+  transition: background var(--transition), color var(--transition);
+  line-height: 1.6;
+}
+
+img { display: block; max-width: 100%; }
+a { color: inherit; text-decoration: none; }
+button { font-family: var(--font-body); cursor: pointer; border: none; outline: none; background: none; }
+ul { list-style: none; }
+
+/* ===========================
+   LOADING SCREEN
+=========================== */
+#loader {
+  position: fixed; inset: 0; z-index: 9999;
+  background: var(--bg);
+  display: flex; align-items: center; justify-content: center;
+  flex-direction: column; gap: 20px;
+  transition: opacity 0.6s ease, visibility 0.6s ease;
+}
+#loader.hidden { opacity: 0; visibility: hidden; }
+
+.loader-logo {
+  font-family: var(--font-display);
+  font-size: clamp(2rem, 5vw, 3.5rem);
+  font-weight: 900;
+  background: linear-gradient(135deg, var(--accent), var(--accent2));
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  background-clip: text;
+  animation: pulse-text 1.2s ease infinite alternate;
+}
+@keyframes pulse-text { from { opacity: 0.5; } to { opacity: 1; } }
+
+.loader-bar {
+  width: 200px; height: 3px;
+  background: var(--border);
+  border-radius: var(--radius-pill);
+  overflow: hidden;
+}
+.loader-bar-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--accent), var(--accent2));
+  border-radius: var(--radius-pill);
+  animation: load-bar 1.8s cubic-bezier(0.4,0,0.2,1) forwards;
+}
+@keyframes load-bar { from { width: 0; } to { width: 100%; } }
+
+/* ===========================
+   NAVBAR
+=========================== */
+#navbar {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 1000;
+  height: var(--nav-h);
+  display: flex; align-items: center;
+  padding: 0 clamp(16px, 4vw, 48px);
+  transition: background var(--transition), backdrop-filter var(--transition), border-color var(--transition);
+  border-bottom: 1px solid transparent;
+}
+#navbar.scrolled {
+  background: rgba(13,13,15,0.85);
+  backdrop-filter: blur(20px);
+  border-color: var(--border);
+}
+[data-theme="light"] #navbar.scrolled {
+  background: rgba(250,248,245,0.85);
+}
+
+.nav-inner {
+  width: 100%; max-width: 1400px; margin: 0 auto;
+  display: flex; align-items: center; justify-content: space-between;
+}
+
+.nav-logo {
+  font-family: var(--font-display);
+  font-size: 1.6rem; font-weight: 900;
+  background: linear-gradient(135deg, var(--accent), var(--accent2));
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  background-clip: text;
+  letter-spacing: -0.03em;
+}
+
+.nav-links {
+  display: flex; align-items: center; gap: 36px;
+}
+.nav-links a {
+  font-size: 0.9rem; font-weight: 500;
+  color: var(--text-muted);
+  transition: color var(--transition);
+  position: relative;
+}
+.nav-links a::after {
+  content: ''; position: absolute; bottom: -4px; left: 0; right: 0;
+  height: 2px; background: var(--accent);
+  transform: scaleX(0); transform-origin: left;
+  transition: transform var(--transition);
+}
+.nav-links a:hover { color: var(--text); }
+.nav-links a:hover::after { transform: scaleX(1); }
+
+.nav-actions { display: flex; align-items: center; gap: 12px; }
+
+.btn-theme {
+  width: 40px; height: 40px; border-radius: var(--radius-pill);
+  border: 1px solid var(--border);
+  display: flex; align-items: center; justify-content: center;
+  color: var(--text-muted); font-size: 1rem;
+  transition: all var(--transition);
+}
+.btn-theme:hover { border-color: var(--accent); color: var(--accent); }
+
+.btn-fav {
+  display: flex; align-items: center; gap: 8px;
+  padding: 8px 18px; border-radius: var(--radius-pill);
+  background: var(--bg-glass); border: 1px solid var(--border);
+  color: var(--text); font-size: 0.85rem; font-weight: 500;
+  transition: all var(--transition);
+}
+.btn-fav:hover { border-color: var(--accent); color: var(--accent); background: var(--accent-glow); }
+
+.hamburger {
+  display: none; flex-direction: column; gap: 5px;
+  width: 36px; padding: 4px;
+}
+.hamburger span {
+  display: block; height: 2px; background: var(--text);
+  border-radius: 2px; transition: all var(--transition);
+  transform-origin: center;
+}
+.hamburger.open span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+.hamburger.open span:nth-child(2) { opacity: 0; transform: scaleX(0); }
+.hamburger.open span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+
+.mobile-menu {
+  display: none; position: fixed; top: var(--nav-h); left: 0; right: 0;
+  background: var(--bg-alt); border-bottom: 1px solid var(--border);
+  padding: 24px; flex-direction: column; gap: 20px;
+  z-index: 999; animation: slide-down 0.3s ease;
+}
+@keyframes slide-down { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
+.mobile-menu.open { display: flex; }
+.mobile-menu a { font-size: 1rem; font-weight: 500; color: var(--text-muted); padding: 8px 0; border-bottom: 1px solid var(--border); }
+.mobile-menu a:hover { color: var(--text); }
+
+/* ===========================
+   SECTIONS SHARED
+=========================== */
+section { padding: clamp(60px, 10vw, 120px) clamp(16px, 4vw, 48px); }
+
+.section-inner { max-width: 1400px; margin: 0 auto; }
+
+.section-label {
+  display: inline-flex; align-items: center; gap: 8px;
+  font-size: 0.78rem; font-weight: 600; letter-spacing: 0.12em;
+  text-transform: uppercase; color: var(--accent);
+  margin-bottom: 16px;
+}
+.section-label::before {
+  content: ''; width: 24px; height: 2px; background: var(--accent);
+  border-radius: 2px;
+}
+
+.section-title {
+  font-family: var(--font-display);
+  font-size: clamp(2rem, 4vw, 3.2rem);
+  font-weight: 700; line-height: 1.15;
+  letter-spacing: -0.03em;
+  margin-bottom: 12px;
+}
+
+.section-sub {
+  font-size: clamp(0.95rem, 2vw, 1.1rem);
+  color: var(--text-muted); max-width: 560px;
+  margin-bottom: 48px;
+}
+
+/* Scroll reveal */
+.reveal {
+  opacity: 0; transform: translateY(40px);
+  transition: opacity 0.7s ease, transform 0.7s ease;
+}
+.reveal.visible { opacity: 1; transform: translateY(0); }
+
+/* ===========================
+   HERO
+=========================== */
+#hero {
+  min-height: 100vh;
+  display: flex; align-items: center;
+  padding-top: calc(var(--nav-h) + 40px);
+  position: relative; overflow: hidden;
+}
+
+.hero-bg {
+  position: absolute; inset: 0; pointer-events: none; z-index: 0;
+}
+.hero-orb {
+  position: absolute; border-radius: 50%;
+  filter: blur(80px); opacity: 0.35;
+}
+.hero-orb-1 {
+  width: 600px; height: 600px;
+  background: radial-gradient(circle, var(--accent), transparent 70%);
+  top: -200px; right: -100px;
+  animation: float-orb 8s ease-in-out infinite alternate;
+}
+.hero-orb-2 {
+  width: 400px; height: 400px;
+  background: radial-gradient(circle, var(--accent2), transparent 70%);
+  bottom: -100px; left: -100px;
+  animation: float-orb 10s ease-in-out infinite alternate-reverse;
+}
+.hero-orb-3 {
+  width: 300px; height: 300px;
+  background: radial-gradient(circle, var(--accent3), transparent 70%);
+  top: 40%; left: 35%; opacity: 0.2;
+  animation: float-orb 12s ease-in-out infinite;
+}
+@keyframes float-orb {
+  from { transform: translate(0,0) scale(1); }
+  to { transform: translate(30px, -40px) scale(1.1); }
+}
+
+.hero-inner {
+  position: relative; z-index: 1;
+  max-width: 1400px; margin: 0 auto; width: 100%;
+  display: grid; grid-template-columns: 1fr 1fr;
+  gap: 60px; align-items: center;
+}
+
+.hero-badge {
+  display: inline-flex; align-items: center; gap: 10px;
+  padding: 8px 16px; border-radius: var(--radius-pill);
+  background: var(--bg-glass); border: 1px solid var(--border);
+  font-size: 0.82rem; color: var(--text-muted);
+  margin-bottom: 24px; backdrop-filter: blur(10px);
+}
+.hero-badge span { color: var(--accent); font-weight: 600; }
+
+.hero-title {
+  font-family: var(--font-display);
+  font-size: clamp(3rem, 6vw, 5.5rem);
+  font-weight: 900; line-height: 1.05;
+  letter-spacing: -0.04em;
+  margin-bottom: 24px;
+}
+.hero-title em { font-style: italic; color: var(--accent); }
+
+.hero-desc {
+  font-size: clamp(1rem, 2vw, 1.2rem);
+  color: var(--text-muted); max-width: 480px;
+  margin-bottom: 40px; line-height: 1.7;
+}
+
+.hero-cta { display: flex; gap: 14px; flex-wrap: wrap; margin-bottom: 56px; }
+
+.btn-primary {
+  display: inline-flex; align-items: center; gap: 10px;
+  padding: 14px 28px; border-radius: var(--radius-pill);
+  background: linear-gradient(135deg, var(--accent), #ff8c42);
+  color: #fff; font-weight: 600; font-size: 0.95rem;
+  transition: all var(--transition);
+  box-shadow: 0 4px 24px rgba(255,107,53,0.4);
+}
+.btn-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 32px rgba(255,107,53,0.5); }
+.btn-primary:active { transform: translateY(0); }
+
+.btn-outline {
+  display: inline-flex; align-items: center; gap: 10px;
+  padding: 14px 28px; border-radius: var(--radius-pill);
+  border: 1px solid var(--border); color: var(--text);
+  font-weight: 500; font-size: 0.95rem;
+  transition: all var(--transition);
+}
+.btn-outline:hover { border-color: var(--border-hover); background: var(--bg-glass); }
+
+.hero-stats {
+  display: flex; gap: 36px; flex-wrap: wrap;
+}
+.hero-stat-num {
+  font-family: var(--font-display);
+  font-size: 2rem; font-weight: 700;
+  color: var(--text);
+}
+.hero-stat-num span { color: var(--accent); }
+.hero-stat-label { font-size: 0.82rem; color: var(--text-muted); margin-top: 2px; }
+
+/* Hero visual */
+.hero-visual {
+  display: grid; grid-template-columns: 1fr 1fr;
+  gap: 16px; position: relative;
+}
+.hero-card-big {
+  grid-column: 1 / -1;
+  height: 220px;
+  border-radius: var(--radius);
+  overflow: hidden; position: relative;
+  border: 1px solid var(--border);
+  cursor: pointer;
+}
+.hero-card-sm {
+  height: 160px;
+  border-radius: var(--radius);
+  overflow: hidden; position: relative;
+  border: 1px solid var(--border);
+  cursor: pointer;
+}
+.hero-card-big:hover, .hero-card-sm:hover { transform: scale(1.02); transition: transform var(--transition); }
+
+.hcard-bg {
+  position: absolute; inset: 0;
+  background-size: cover; background-position: center;
+  transition: transform 0.6s ease;
+}
+.hero-card-big:hover .hcard-bg, .hero-card-sm:hover .hcard-bg { transform: scale(1.05); }
+
+.hcard-overlay {
+  position: absolute; inset: 0;
+  background: linear-gradient(to top, rgba(0,0,0,0.8) 0%, transparent 60%);
+  display: flex; flex-direction: column; justify-content: flex-end;
+  padding: 18px;
+}
+.hcard-tag {
+  display: inline-block; padding: 4px 10px; border-radius: var(--radius-pill);
+  background: var(--accent); color: #fff;
+  font-size: 0.7rem; font-weight: 600; letter-spacing: 0.06em;
+  text-transform: uppercase; margin-bottom: 6px; align-self: flex-start;
+}
+.hcard-name {
+  font-family: var(--font-display);
+  font-size: 1.1rem; font-weight: 700; color: #fff;
+  line-height: 1.2;
+}
+.hcard-meta { font-size: 0.78rem; color: rgba(255,255,255,0.7); margin-top: 4px; }
+
+/* ===========================
+   SEARCH
+=========================== */
+#search {
+  padding: 0 clamp(16px, 4vw, 48px) clamp(40px, 6vw, 80px);
+}
+.search-inner { max-width: 800px; margin: 0 auto; }
+
+.search-wrap {
+  position: relative;
+}
+.search-input {
+  width: 100%; padding: 18px 24px 18px 56px;
+  border-radius: var(--radius-pill);
+  background: var(--bg-card); border: 1px solid var(--border);
+  color: var(--text); font-family: var(--font-body);
+  font-size: 1rem;
+  transition: all var(--transition);
+  box-shadow: var(--shadow-sm);
+}
+.search-input:focus {
+  outline: none; border-color: var(--accent);
+  box-shadow: 0 0 0 4px var(--accent-glow), var(--shadow-sm);
+}
+.search-input::placeholder { color: var(--text-faint); }
+
+.search-icon {
+  position: absolute; left: 20px; top: 50%;
+  transform: translateY(-50%); color: var(--text-muted);
+  font-size: 1.1rem; pointer-events: none;
+}
+.search-clear {
+  position: absolute; right: 20px; top: 50%;
+  transform: translateY(-50%); color: var(--text-muted);
+  font-size: 1rem; cursor: pointer; padding: 4px;
+  display: none; transition: color var(--transition);
+}
+.search-clear:hover { color: var(--accent); }
+.search-clear.visible { display: block; }
+
+.search-tags {
+  display: flex; flex-wrap: wrap; gap: 10px; margin-top: 16px;
+}
+.search-tag {
+  padding: 6px 14px; border-radius: var(--radius-pill);
+  background: var(--bg-glass); border: 1px solid var(--border);
+  color: var(--text-muted); font-size: 0.82rem;
+  cursor: pointer; transition: all var(--transition);
+}
+.search-tag:hover { border-color: var(--accent); color: var(--accent); background: var(--accent-glow); }
+
+/* ===========================
+   CATEGORIES
+=========================== */
+#categories { padding-top: 0; }
+
+.categories-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+  gap: 14px; margin-top: 0;
+}
+
+.cat-card {
+  padding: 24px 16px;
+  border-radius: var(--radius);
+  background: var(--bg-card); border: 1px solid var(--border);
+  display: flex; flex-direction: column; align-items: center; gap: 12px;
+  cursor: pointer; transition: all var(--transition);
+  text-align: center;
+}
+.cat-card:hover, .cat-card.active {
+  border-color: var(--accent); background: var(--accent-glow);
+  transform: translateY(-4px); box-shadow: var(--shadow-sm);
+}
+
+.cat-icon {
+  font-size: 2rem; line-height: 1;
+  display: flex; align-items: center; justify-content: center;
+  width: 56px; height: 56px; border-radius: var(--radius-sm);
+  background: var(--bg-glass);
+}
+.cat-name { font-size: 0.85rem; font-weight: 600; color: var(--text-muted); }
+.cat-card:hover .cat-name, .cat-card.active .cat-name { color: var(--accent); }
+.cat-count { font-size: 0.72rem; color: var(--text-faint); }
+
+/* ===========================
+   RECIPE CARDS
+=========================== */
+.recipes-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 24px;
+}
+
+.recipe-card {
+  background: var(--bg-card); border: 1px solid var(--border);
+  border-radius: var(--radius); overflow: hidden;
+  cursor: pointer; transition: all var(--transition);
+  position: relative;
+}
+.recipe-card:hover {
+  transform: translateY(-6px); box-shadow: var(--shadow);
+  border-color: var(--border-hover);
+}
+
+.recipe-img-wrap {
+  height: 220px; position: relative; overflow: hidden;
+}
+.recipe-img {
+  width: 100%; height: 100%;
+  background-size: cover; background-position: center;
+  transition: transform 0.6s ease;
+}
+.recipe-card:hover .recipe-img { transform: scale(1.06); }
+
+.recipe-category-badge {
+  position: absolute; top: 14px; left: 14px;
+  padding: 5px 12px; border-radius: var(--radius-pill);
+  background: rgba(0,0,0,0.65); backdrop-filter: blur(8px);
+  color: #fff; font-size: 0.72rem; font-weight: 600;
+  letter-spacing: 0.06em; text-transform: uppercase;
+}
+
+.recipe-fav-btn {
+  position: absolute; top: 14px; right: 14px;
+  width: 36px; height: 36px; border-radius: 50%;
+  background: rgba(0,0,0,0.55); backdrop-filter: blur(8px);
+  display: flex; align-items: center; justify-content: center;
+  color: #fff; font-size: 0.95rem;
+  transition: all var(--transition);
+  z-index: 2;
+}
+.recipe-fav-btn:hover, .recipe-fav-btn.active { background: var(--accent); color: #fff; }
+
+.recipe-body { padding: 20px; }
+
+.recipe-title {
+  font-family: var(--font-display);
+  font-size: 1.2rem; font-weight: 700;
+  letter-spacing: -0.02em; line-height: 1.25;
+  margin-bottom: 8px;
+}
+
+.recipe-desc {
+  font-size: 0.85rem; color: var(--text-muted);
+  line-height: 1.6; margin-bottom: 16px;
+  display: -webkit-box;
+  -webkit-line-clamp: 2; -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.recipe-meta {
+  display: flex; align-items: center; gap: 16px;
+  flex-wrap: wrap;
+}
+.recipe-meta-item {
+  display: flex; align-items: center; gap: 6px;
+  font-size: 0.8rem; color: var(--text-muted);
+}
+.recipe-meta-item i { color: var(--accent); font-size: 0.85rem; }
+
+.recipe-rating {
+  display: flex; align-items: center; gap: 4px;
+  margin-left: auto; font-size: 0.82rem; font-weight: 600;
+}
+.recipe-rating i { color: var(--accent2); }
+
+/* ===========================
+   EMPTY STATE
+=========================== */
+#empty-state {
+  display: none; text-align: center;
+  padding: 80px 24px;
+  flex-direction: column; align-items: center; gap: 16px;
+}
+#empty-state.visible { display: flex; }
+.empty-icon { font-size: 4rem; opacity: 0.3; }
+.empty-title { font-family: var(--font-display); font-size: 1.8rem; font-weight: 700; }
+.empty-sub { color: var(--text-muted); max-width: 360px; }
+
+/* ===========================
+   TRENDING
+=========================== */
+.trending-scroll {
+  display: flex; gap: 20px;
+  overflow-x: auto; padding-bottom: 12px;
+  scrollbar-width: none;
+}
+.trending-scroll::-webkit-scrollbar { display: none; }
+
+.trending-card {
+  flex: 0 0 280px;
+  background: var(--bg-card); border: 1px solid var(--border);
+  border-radius: var(--radius); overflow: hidden;
+  cursor: pointer; transition: all var(--transition);
+}
+.trending-card:hover {
+  transform: translateY(-4px); box-shadow: var(--shadow-sm);
+  border-color: var(--border-hover);
+}
+.trending-card-img {
+  height: 170px;
+  background-size: cover; background-position: center;
+  transition: transform 0.5s ease; position: relative;
+}
+.trending-card:hover .trending-card-img { transform: scale(1.04); }
+.trending-rank {
+  position: absolute; top: 12px; left: 12px;
+  width: 32px; height: 32px; border-radius: 50%;
+  background: var(--accent); color: #fff;
+  display: flex; align-items: center; justify-content: center;
+  font-weight: 700; font-size: 0.85rem;
+}
+.trending-card-body { padding: 16px; }
+.trending-card-title {
+  font-family: var(--font-display);
+  font-size: 1.05rem; font-weight: 700;
+  margin-bottom: 6px; letter-spacing: -0.02em;
+}
+.trending-card-meta { font-size: 0.78rem; color: var(--text-muted); }
+
+/* ===========================
+   ABOUT
+=========================== */
+.about-grid {
+  display: grid; grid-template-columns: 1fr 1fr;
+  gap: 80px; align-items: center;
+}
+.about-features { display: flex; flex-direction: column; gap: 28px; margin-top: 40px; }
+.about-feat {
+  display: flex; gap: 18px; align-items: flex-start;
+}
+.about-feat-icon {
+  width: 48px; height: 48px; border-radius: var(--radius-sm);
+  background: var(--accent-glow); border: 1px solid rgba(255,107,53,0.2);
+  display: flex; align-items: center; justify-content: center;
+  color: var(--accent); font-size: 1.1rem; flex-shrink: 0;
+}
+.about-feat-title { font-weight: 600; margin-bottom: 4px; }
+.about-feat-desc { font-size: 0.88rem; color: var(--text-muted); line-height: 1.6; }
+
+.about-visual {
+  position: relative;
+}
+.about-img-main {
+  width: 100%; height: 480px; border-radius: var(--radius);
+  background: linear-gradient(135deg, var(--bg-alt) 0%, var(--bg-card) 100%);
+  border: 1px solid var(--border); overflow: hidden; position: relative;
+  display: flex; align-items: center; justify-content: center;
+}
+
+.about-big-emoji { font-size: 8rem; filter: drop-shadow(0 8px 24px rgba(0,0,0,0.4)); }
+
+.about-float-card {
+  position: absolute; background: var(--bg-card);
+  border: 1px solid var(--border); border-radius: var(--radius);
+  padding: 16px 20px; backdrop-filter: blur(12px);
+  box-shadow: var(--shadow-sm);
+}
+.afc-top { top: -20px; right: -20px; min-width: 160px; }
+.afc-bot { bottom: -20px; left: -20px; min-width: 180px; }
+.afc-label { font-size: 0.72rem; color: var(--text-muted); margin-bottom: 4px; }
+.afc-val {
+  font-family: var(--font-display); font-size: 1.5rem;
+  font-weight: 700; color: var(--accent);
+}
+
+/* ===========================
+   TESTIMONIALS
+=========================== */
+.testi-grid {
+  display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 20px;
+}
+.testi-card {
+  background: var(--bg-card); border: 1px solid var(--border);
+  border-radius: var(--radius); padding: 28px;
+  transition: all var(--transition);
+}
+.testi-card:hover { transform: translateY(-4px); border-color: var(--border-hover); }
+.testi-stars { color: var(--accent2); margin-bottom: 16px; font-size: 0.9rem; }
+.testi-quote {
+  font-size: 0.95rem; line-height: 1.7;
+  color: var(--text); margin-bottom: 20px;
+  font-style: italic;
+}
+.testi-author { display: flex; align-items: center; gap: 12px; }
+.testi-avatar {
+  width: 44px; height: 44px; border-radius: 50%;
+  background: linear-gradient(135deg, var(--accent), var(--accent2));
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.2rem; flex-shrink: 0;
+}
+.testi-name { font-weight: 600; font-size: 0.9rem; }
+.testi-role { font-size: 0.78rem; color: var(--text-muted); }
+
+/* ===========================
+   FOOTER / CONTACT
+=========================== */
+footer {
+  background: var(--bg-alt);
+  border-top: 1px solid var(--border);
+  padding: clamp(60px, 8vw, 100px) clamp(16px, 4vw, 48px) 40px;
+}
+
+.footer-inner { max-width: 1400px; margin: 0 auto; }
+
+.footer-top {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr 1fr;
+  gap: 60px; margin-bottom: 60px;
+}
+
+.footer-brand-logo {
+  font-family: var(--font-display);
+  font-size: 1.8rem; font-weight: 900;
+  background: linear-gradient(135deg, var(--accent), var(--accent2));
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  background-clip: text; margin-bottom: 14px;
+}
+
+.footer-brand-desc { font-size: 0.88rem; color: var(--text-muted); line-height: 1.7; max-width: 300px; }
+
+.footer-social { display: flex; gap: 10px; margin-top: 20px; }
+.footer-soc-btn {
+  width: 36px; height: 36px; border-radius: 50%;
+  border: 1px solid var(--border);
+  display: flex; align-items: center; justify-content: center;
+  color: var(--text-muted); font-size: 0.9rem;
+  transition: all var(--transition);
+}
+.footer-soc-btn:hover { border-color: var(--accent); color: var(--accent); background: var(--accent-glow); }
+
+.footer-col-title { font-weight: 600; margin-bottom: 20px; font-size: 0.9rem; }
+.footer-links { display: flex; flex-direction: column; gap: 12px; }
+.footer-links a { font-size: 0.85rem; color: var(--text-muted); transition: color var(--transition); }
+.footer-links a:hover { color: var(--text); }
+
+.footer-newsletter { margin-top: 16px; }
+.newsletter-input-wrap {
+  display: flex; gap: 0;
+  border: 1px solid var(--border); border-radius: var(--radius-pill);
+  overflow: hidden; transition: border-color var(--transition);
+}
+.newsletter-input-wrap:focus-within { border-color: var(--accent); }
+.newsletter-input {
+  flex: 1; padding: 10px 16px;
+  background: transparent; border: none;
+  color: var(--text); font-family: var(--font-body);
+  font-size: 0.85rem;
+}
+.newsletter-input::placeholder { color: var(--text-faint); }
+.newsletter-input:focus { outline: none; }
+.newsletter-btn {
+  padding: 10px 18px;
+  background: var(--accent); color: #fff;
+  font-size: 0.82rem; font-weight: 600;
+  transition: background var(--transition);
+}
+.newsletter-btn:hover { background: #e55e2a; }
+
+.footer-bottom {
+  display: flex; align-items: center; justify-content: space-between;
+  padding-top: 32px; border-top: 1px solid var(--border);
+  flex-wrap: wrap; gap: 16px;
+  font-size: 0.82rem; color: var(--text-muted);
+}
+.footer-bottom a { color: var(--text-muted); transition: color var(--transition); }
+.footer-bottom a:hover { color: var(--text); }
+
+/* ===========================
+   MODAL
+=========================== */
+.modal-overlay {
+  position: fixed; inset: 0; z-index: 2000;
+  background: rgba(0,0,0,0.8); backdrop-filter: blur(8px);
+  display: flex; align-items: center; justify-content: center;
+  padding: 20px; opacity: 0; visibility: hidden;
+  transition: all 0.35s ease;
+}
+.modal-overlay.open { opacity: 1; visibility: visible; }
+
+.modal {
+  background: var(--bg-card); border: 1px solid var(--border);
+  border-radius: var(--radius); max-width: 740px; width: 100%;
+  max-height: 90vh; overflow-y: auto;
+  transform: scale(0.9) translateY(20px);
+  transition: transform 0.35s cubic-bezier(0.4,0,0.2,1);
+  scrollbar-width: thin; scrollbar-color: var(--border) transparent;
+}
+.modal-overlay.open .modal { transform: scale(1) translateY(0); }
+
+.modal-hero {
+  height: 280px;
+  background-size: cover; background-position: center;
+  position: relative;
+}
+.modal-hero-overlay {
+  position: absolute; inset: 0;
+  background: linear-gradient(to top, rgba(0,0,0,0.9) 0%, transparent 50%);
+  display: flex; flex-direction: column; justify-content: flex-end;
+  padding: 28px;
+}
+.modal-close {
+  position: absolute; top: 16px; right: 16px;
+  width: 40px; height: 40px; border-radius: 50%;
+  background: rgba(0,0,0,0.6); backdrop-filter: blur(8px);
+  display: flex; align-items: center; justify-content: center;
+  color: #fff; font-size: 1rem;
+  transition: all var(--transition);
+}
+.modal-close:hover { background: var(--accent); }
+
+.modal-badge {
+  padding: 5px 12px; border-radius: var(--radius-pill);
+  background: var(--accent); color: #fff;
+  font-size: 0.72rem; font-weight: 600;
+  letter-spacing: 0.06em; text-transform: uppercase;
+  align-self: flex-start; margin-bottom: 8px;
+}
+.modal-title {
+  font-family: var(--font-display);
+  font-size: 2rem; font-weight: 900;
+  color: #fff; letter-spacing: -0.03em; line-height: 1.15;
+}
+
+.modal-body { padding: 28px; }
+
+.modal-meta-row {
+  display: flex; gap: 24px; flex-wrap: wrap;
+  margin-bottom: 24px; padding-bottom: 24px;
+  border-bottom: 1px solid var(--border);
+}
+.modal-meta-item {
+  display: flex; align-items: center; gap: 8px;
+  font-size: 0.88rem; color: var(--text-muted);
+}
+.modal-meta-item i { color: var(--accent); }
+
+.modal-section-title {
+  font-weight: 700; font-size: 0.95rem;
+  margin-bottom: 16px; margin-top: 24px;
+  display: flex; align-items: center; gap: 8px;
+}
+.modal-section-title i { color: var(--accent); }
+
+.ingredients-grid {
+  display: grid; grid-template-columns: 1fr 1fr;
+  gap: 10px; margin-bottom: 8px;
+}
+.ingredient-item {
+  display: flex; align-items: center; gap: 10px;
+  font-size: 0.88rem; padding: 10px 14px;
+  background: var(--bg-glass); border-radius: var(--radius-sm);
+  border: 1px solid var(--border);
+}
+.ingredient-item i { color: var(--accent3); font-size: 0.75rem; }
+
+.steps-list { display: flex; flex-direction: column; gap: 14px; }
+.step-item {
+  display: flex; gap: 16px;
+  font-size: 0.88rem; color: var(--text-muted); line-height: 1.6;
+}
+.step-num {
+  width: 28px; height: 28px; border-radius: 50%;
+  background: var(--accent); color: #fff;
+  display: flex; align-items: center; justify-content: center;
+  font-weight: 700; font-size: 0.78rem; flex-shrink: 0;
+}
+
+.modal-fav-btn {
+  display: flex; align-items: center; gap: 10px;
+  padding: 12px 24px; border-radius: var(--radius-pill);
+  border: 1px solid var(--border); color: var(--text);
+  font-weight: 500; font-size: 0.9rem;
+  transition: all var(--transition); margin-top: 28px;
+}
+.modal-fav-btn:hover { border-color: var(--accent); color: var(--accent); background: var(--accent-glow); }
+.modal-fav-btn.active { background: var(--accent); border-color: var(--accent); color: #fff; }
+
+/* ===========================
+   FAVORITES PANEL
+=========================== */
+.fav-panel-overlay {
+  position: fixed; inset: 0; z-index: 1500;
+  background: rgba(0,0,0,0.6); backdrop-filter: blur(6px);
+  opacity: 0; visibility: hidden; transition: all 0.3s ease;
+}
+.fav-panel-overlay.open { opacity: 1; visibility: visible; }
+
+.fav-panel {
+  position: fixed; top: 0; right: 0; bottom: 0;
+  width: min(420px, 100vw);
+  background: var(--bg-card); border-left: 1px solid var(--border);
+  z-index: 1501; padding: 32px 24px;
+  overflow-y: auto; transform: translateX(100%);
+  transition: transform 0.4s cubic-bezier(0.4,0,0.2,1);
+  scrollbar-width: thin;
+}
+.fav-panel-overlay.open .fav-panel { transform: translateX(0); }
+
+.fav-panel-header {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-bottom: 28px;
+}
+.fav-panel-title {
+  font-family: var(--font-display);
+  font-size: 1.6rem; font-weight: 700; letter-spacing: -0.03em;
+}
+.fav-close {
+  width: 36px; height: 36px; border-radius: 50%;
+  border: 1px solid var(--border);
+  display: flex; align-items: center; justify-content: center;
+  color: var(--text-muted); transition: all var(--transition);
+}
+.fav-close:hover { border-color: var(--accent); color: var(--accent); }
+
+.fav-list { display: flex; flex-direction: column; gap: 14px; }
+
+.fav-item {
+  display: flex; gap: 14px; align-items: center;
+  background: var(--bg-glass); border: 1px solid var(--border);
+  border-radius: var(--radius-sm); padding: 12px;
+  cursor: pointer; transition: all var(--transition);
+}
+.fav-item:hover { border-color: var(--border-hover); }
+.fav-item-img {
+  width: 64px; height: 64px; border-radius: var(--radius-sm);
+  background-size: cover; background-position: center; flex-shrink: 0;
+}
+.fav-item-title { font-weight: 600; font-size: 0.9rem; margin-bottom: 4px; }
+.fav-item-meta { font-size: 0.78rem; color: var(--text-muted); }
+.fav-remove {
+  margin-left: auto; color: var(--text-faint);
+  font-size: 0.9rem; padding: 4px;
+  transition: color var(--transition); flex-shrink: 0;
+}
+.fav-remove:hover { color: var(--accent); }
+
+.fav-empty {
+  text-align: center; padding: 60px 20px;
+  color: var(--text-muted);
+}
+.fav-empty i { font-size: 3rem; opacity: 0.3; display: block; margin-bottom: 16px; }
+
+/* ===========================
+   BACK TO TOP
+=========================== */
+#back-top {
+  position: fixed; bottom: 28px; right: 28px; z-index: 900;
+  width: 48px; height: 48px; border-radius: 50%;
+  background: var(--accent); color: #fff;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1rem; box-shadow: 0 4px 16px rgba(255,107,53,0.4);
+  opacity: 0; transform: translateY(20px);
+  transition: all var(--transition); pointer-events: none;
+}
+#back-top.visible { opacity: 1; transform: translateY(0); pointer-events: auto; }
+#back-top:hover { transform: translateY(-3px); box-shadow: 0 8px 24px rgba(255,107,53,0.5); }
+
+/* ===========================
+   NOTIFICATION TOAST
+=========================== */
+.toast {
+  position: fixed; bottom: 90px; right: 28px; z-index: 3000;
+  padding: 12px 20px; border-radius: var(--radius-pill);
+  background: var(--bg-card); border: 1px solid var(--border);
+  color: var(--text); font-size: 0.88rem; font-weight: 500;
+  display: flex; align-items: center; gap: 10px;
+  box-shadow: var(--shadow);
+  transform: translateX(120%); transition: transform 0.4s cubic-bezier(0.4,0,0.2,1);
+}
+.toast.show { transform: translateX(0); }
+.toast i { color: var(--accent); }
+
+/* ===========================
+   RESPONSIVE
+=========================== */
+@media (max-width: 1024px) {
+  .about-grid { grid-template-columns: 1fr; gap: 48px; }
+  .about-visual { display: none; }
+  .footer-top { grid-template-columns: 1fr 1fr; gap: 40px; }
+}
+
+@media (max-width: 768px) {
+  .nav-links, .btn-fav { display: none; }
+  .hamburger { display: flex; }
+  .hero-inner { grid-template-columns: 1fr; }
+  .hero-visual { display: none; }
+  .recipes-grid { grid-template-columns: 1fr; }
+  .footer-top { grid-template-columns: 1fr; gap: 32px; }
+  .footer-bottom { flex-direction: column; text-align: center; }
+  .ingredients-grid { grid-template-columns: 1fr; }
+  .modal-title { font-size: 1.5rem; }
+}
+
+@media (max-width: 480px) {
+  .hero-stats { gap: 20px; }
+  .hero-cta { flex-direction: column; }
+  .btn-primary, .btn-outline { width: 100%; justify-content: center; }
+  .testi-grid { grid-template-columns: 1fr; }
+  .categories-grid { grid-template-columns: repeat(3, 1fr); }
+}
+</style>
+</head>
+<body>
+
+<!-- ===========================
+     LOADING SCREEN
+=========================== -->
+<div id="loader" role="status" aria-label="Loading FlavorHunt">
+  <div class="loader-logo">FlavorHunt</div>
+  <div class="loader-bar"><div class="loader-bar-fill"></div></div>
+</div>
+
+<!-- ===========================
+     NAVBAR
+=========================== -->
+<nav id="navbar" role="navigation" aria-label="Main navigation">
+  <div class="nav-inner">
+    <a href="#" class="nav-logo" aria-label="FlavorHunt home">FlavorHunt</a>
+    <ul class="nav-links" role="list">
+      <li><a href="#trending">Trending</a></li>
+      <li><a href="#recipes">Recipes</a></li>
+      <li><a href="#about">About</a></li>
+      <li><a href="#testimonials">Reviews</a></li>
+      <li><a href="#contact">Contact</a></li>
+    </ul>
+    <div class="nav-actions">
+      <button class="btn-theme" id="themeToggle" aria-label="Toggle dark/light mode">
+        <i class="fas fa-moon" id="themeIcon"></i>
+      </button>
+      <button class="btn-fav" id="favBtn" aria-label="View saved recipes">
+        <i class="fas fa-heart"></i>
+        Saved <span id="favCount">(0)</span>
+      </button>
+      <button class="hamburger" id="hamburger" aria-label="Toggle mobile menu" aria-expanded="false">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </div>
+</nav>
+
+<!-- Mobile Menu -->
+<div class="mobile-menu" id="mobileMenu" role="navigation" aria-label="Mobile navigation">
+  <a href="#trending" onclick="closeMobileMenu()">Trending</a>
+  <a href="#recipes" onclick="closeMobileMenu()">Recipes</a>
+  <a href="#about" onclick="closeMobileMenu()">About</a>
+  <a href="#testimonials" onclick="closeMobileMenu()">Reviews</a>
+  <a href="#contact" onclick="closeMobileMenu()">Contact</a>
+  <button class="btn-fav" style="align-self:flex-start" onclick="openFavPanel();closeMobileMenu()">
+    <i class="fas fa-heart"></i> Saved <span id="favCountMobile">(0)</span>
+  </button>
+</div>
+
+<!-- ===========================
+     HERO
+=========================== -->
+<section id="hero" aria-label="Hero section">
+  <div class="hero-bg" aria-hidden="true">
+    <div class="hero-orb hero-orb-1"></div>
+    <div class="hero-orb hero-orb-2"></div>
+    <div class="hero-orb hero-orb-3"></div>
+  </div>
+  <div class="hero-inner">
+    <div class="hero-content">
+      <div class="hero-badge reveal">
+        <i class="fas fa-fire" style="color:var(--accent)"></i>
+        <span>500+</span> handpicked recipes for every craving
+      </div>
+      <h1 class="hero-title reveal">
+        Hunt Your Next <em>Flavor</em> Obsession
+      </h1>
+      <p class="hero-desc reveal">
+        Discover thousands of curated recipes, trending dishes, and culinary inspirations. Your perfect meal is just one search away.
+      </p>
+      <div class="hero-cta reveal">
+        <a href="#recipes" class="btn-primary">
+          <i class="fas fa-utensils"></i> Explore Recipes
+        </a>
+        <a href="#trending" class="btn-outline">
+          <i class="fas fa-fire-flame-curved"></i> See Trending
+        </a>
+      </div>
+      <div class="hero-stats reveal">
+        <div>
+          <div class="hero-stat-num">500<span>+</span></div>
+          <div class="hero-stat-label">Recipes</div>
+        </div>
+        <div>
+          <div class="hero-stat-num">12<span>k</span></div>
+          <div class="hero-stat-label">Happy Cooks</div>
+        </div>
+        <div>
+          <div class="hero-stat-num">8<span>+</span></div>
+          <div class="hero-stat-label">Categories</div>
+        </div>
+      </div>
+    </div>
+    <div class="hero-visual" aria-hidden="true">
+      <div class="hero-card-big" onclick="openRecipeById(1)">
+        <div class="hcard-bg" style="background-image:url('https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?w=800&q=80')"></div>
+        <div class="hcard-overlay">
+          <span class="hcard-tag">Featured</span>
+          <div class="hcard-name">Margherita Pizza Perfection</div>
+          <div class="hcard-meta"><i class="fas fa-clock" style="color:var(--accent2)"></i> 35 min · Italian</div>
+        </div>
+      </div>
+      <div class="hero-card-sm" onclick="openRecipeById(3)">
+        <div class="hcard-bg" style="background-image:url('https://images.unsplash.com/photo-1551024506-0bccd828d307?w=600&q=80')"></div>
+        <div class="hcard-overlay">
+          <span class="hcard-tag">Dessert</span>
+          <div class="hcard-name">Lemon Tart</div>
+        </div>
+      </div>
+      <div class="hero-card-sm" onclick="openRecipeById(7)">
+        <div class="hcard-bg" style="background-image:url('https://images.unsplash.com/photo-1512621776951-a57141f2eefd?w=600&q=80')"></div>
+        <div class="hcard-overlay">
+          <span class="hcard-tag">Healthy</span>
+          <div class="hcard-name">Rainbow Bowl</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===========================
+     SEARCH
+=========================== -->
+<section id="search" aria-label="Recipe search">
+  <div class="search-inner">
+    <div class="search-wrap">
+      <i class="fas fa-search search-icon" aria-hidden="true"></i>
+      <input
+        type="search" id="searchInput"
+        class="search-input" placeholder="Search recipes, cuisines, ingredients..."
+        aria-label="Search recipes"
+        autocomplete="off"
+      />
+      <button class="search-clear" id="searchClear" aria-label="Clear search">
+        <i class="fas fa-times"></i>
+      </button>
+    </div>
+    <div class="search-tags" role="list" aria-label="Quick search tags">
+      <button class="search-tag" onclick="quickSearch('pasta')">Pasta</button>
+      <button class="search-tag" onclick="quickSearch('chocolate')">Chocolate</button>
+      <button class="search-tag" onclick="quickSearch('salad')">Salad</button>
+      <button class="search-tag" onclick="quickSearch('burger')">Burger</button>
+      <button class="search-tag" onclick="quickSearch('smoothie')">Smoothie</button>
+      <button class="search-tag" onclick="quickSearch('soup')">Soup</button>
+      <button class="search-tag" onclick="quickSearch('sushi')">Sushi</button>
+    </div>
+  </div>
+</section>
+
+<!-- ===========================
+     CATEGORIES
+=========================== -->
+<section id="categories">
+  <div class="section-inner">
+    <div class="section-label">Browse</div>
+    <h2 class="section-title">What Are You Craving?</h2>
+    <div class="categories-grid" id="categoriesGrid" role="list" aria-label="Recipe categories">
+      <!-- Populated by JS -->
+    </div>
+  </div>
+</section>
+
+<!-- ===========================
+     TRENDING
+=========================== -->
+<section id="trending">
+  <div class="section-inner">
+    <div class="section-label reveal">Hot Right Now</div>
+    <h2 class="section-title reveal">Trending Dishes</h2>
+    <p class="section-sub reveal">What the community can't stop making this week.</p>
+    <div class="trending-scroll" id="trendingScroll" role="list" aria-label="Trending dishes">
+      <!-- Populated by JS -->
+    </div>
+  </div>
+</section>
+
+<!-- ===========================
+     RECIPES
+=========================== -->
+<section id="recipes">
+  <div class="section-inner">
+    <div class="section-label reveal">Discover</div>
+    <h2 class="section-title reveal" id="recipesHeading">All Recipes</h2>
+    <p class="section-sub reveal" id="recipesSub">From quick weeknight dinners to weekend showstoppers.</p>
+    <div class="recipes-grid" id="recipesGrid" role="list" aria-label="Recipe cards">
+      <!-- Populated by JS -->
+    </div>
+    <div id="empty-state" role="status" aria-live="polite">
+      <div class="empty-icon" aria-hidden="true">🍽️</div>
+      <h3 class="empty-title">No recipes found</h3>
+      <p class="empty-sub">Try adjusting your search or browse a different category.</p>
+      <button class="btn-outline" onclick="resetFilters()" style="margin-top:16px">
+        <i class="fas fa-undo"></i> Reset Filters
+      </button>
+    </div>
+  </div>
+</section>
+
+<!-- ===========================
+     ABOUT
+=========================== -->
+<section id="about">
+  <div class="section-inner">
+    <div class="about-grid">
+      <div>
+        <div class="section-label reveal">Our Story</div>
+        <h2 class="section-title reveal">Food Discovery, <br>Reimagined</h2>
+        <p class="section-sub reveal" style="margin-bottom:0">
+          FlavorHunt was born from a simple belief: finding your next favorite meal should feel like an adventure, not a chore. We curate the world's best recipes so you can focus on the joy of cooking.
+        </p>
+        <div class="about-features">
+          <div class="about-feat reveal">
+            <div class="about-feat-icon"><i class="fas fa-wand-magic-sparkles"></i></div>
+            <div>
+              <div class="about-feat-title">Curated Excellence</div>
+              <div class="about-feat-desc">Every recipe is tested, refined, and approved by our team of passionate home cooks and professional chefs.</div>
+            </div>
+          </div>
+          <div class="about-feat reveal">
+            <div class="about-feat-icon"><i class="fas fa-heart"></i></div>
+            <div>
+              <div class="about-feat-title">Save What You Love</div>
+              <div class="about-feat-desc">Build your personal cookbook by saving favorites and revisiting them whenever inspiration strikes.</div>
+            </div>
+          </div>
+          <div class="about-feat reveal">
+            <div class="about-feat-icon"><i class="fas fa-globe"></i></div>
+            <div>
+              <div class="about-feat-title">Global Flavors</div>
+              <div class="about-feat-desc">From Tokyo ramen to Neapolitan pizza, explore authentic recipes from every corner of the world.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="about-visual reveal">
+        <div class="about-img-main">
+          <div class="about-big-emoji">🍳</div>
+        </div>
+        <div class="about-float-card afc-top">
+          <div class="afc-label">Recipes Added</div>
+          <div class="afc-val">500+</div>
+        </div>
+        <div class="about-float-card afc-bot">
+          <div class="afc-label">Happy Cooks</div>
+          <div class="afc-val">12k+</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===========================
+     TESTIMONIALS
+=========================== -->
+<section id="testimonials">
+  <div class="section-inner">
+    <div class="section-label reveal">Reviews</div>
+    <h2 class="section-title reveal">What Cooks Are Saying</h2>
+    <p class="section-sub reveal">Thousands of home cooks trust FlavorHunt daily.</p>
+    <div class="testi-grid" id="testiGrid">
+      <!-- Populated by JS -->
+    </div>
+  </div>
+</section>
+
+<!-- ===========================
+     FOOTER / CONTACT
+=========================== -->
+<footer id="contact" role="contentinfo">
+  <div class="footer-inner">
+    <div class="footer-top">
+      <div>
+        <div class="footer-brand-logo">FlavorHunt</div>
+        <p class="footer-brand-desc">Your premium destination for food discovery, recipe inspiration, and culinary exploration. Eat well, live fully.</p>
+        <div class="footer-social">
+          <a href="#" class="footer-soc-btn" aria-label="Twitter"><i class="fab fa-twitter"></i></a>
+          <a href="#" class="footer-soc-btn" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
+          <a href="#" class="footer-soc-btn" aria-label="YouTube"><i class="fab fa-youtube"></i></a>
+          <a href="#" class="footer-soc-btn" aria-label="Pinterest"><i class="fab fa-pinterest"></i></a>
+        </div>
+      </div>
+      <div>
+        <div class="footer-col-title">Explore</div>
+        <nav class="footer-links" aria-label="Explore links">
+          <a href="#trending">Trending</a>
+          <a href="#recipes">All Recipes</a>
+          <a href="#categories">Categories</a>
+          <a href="#about">About Us</a>
+        </nav>
+      </div>
+      <div>
+        <div class="footer-col-title">Company</div>
+        <nav class="footer-links" aria-label="Company links">
+          <a href="#">Blog</a>
+          <a href="#">Careers</a>
+          <a href="#">Press</a>
+          <a href="#">Contact</a>
+        </nav>
+      </div>
+      <div>
+        <div class="footer-col-title">Newsletter</div>
+        <p style="font-size:0.85rem;color:var(--text-muted);margin-bottom:16px;">Get weekly recipe inspiration in your inbox.</p>
+        <div class="footer-newsletter">
+          <div class="newsletter-input-wrap">
+            <input type="email" class="newsletter-input" placeholder="your@email.com" aria-label="Email for newsletter" />
+            <button class="newsletter-btn" onclick="handleNewsletter()">Join</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span>© 2025 FlavorHunt. All rights reserved.</span>
+      <div style="display:flex;gap:20px;">
+        <a href="#">Privacy Policy</a>
+        <a href="#">Terms of Service</a>
+        <a href="#">Cookies</a>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<!-- ===========================
+     RECIPE MODAL
+=========================== -->
+<div class="modal-overlay" id="modalOverlay" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+  <div class="modal" id="modal">
+    <div class="modal-hero" id="modalHero">
+      <div class="modal-hero-overlay">
+        <span class="modal-badge" id="modalBadge"></span>
+        <h2 class="modal-title" id="modalTitle"></h2>
+      </div>
+      <button class="modal-close" id="modalClose" aria-label="Close recipe modal">
+        <i class="fas fa-times"></i>
+      </button>
+    </div>
+    <div class="modal-body">
+      <div class="modal-meta-row" id="modalMeta"></div>
+      <div class="modal-section-title"><i class="fas fa-list-ul"></i> Ingredients</div>
+      <div class="ingredients-grid" id="modalIngredients"></div>
+      <div class="modal-section-title"><i class="fas fa-shoe-prints"></i> Steps</div>
+      <ol class="steps-list" id="modalSteps"></ol>
+      <button class="modal-fav-btn" id="modalFavBtn" aria-label="Save to favorites">
+        <i class="fas fa-heart"></i> Save to Favorites
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- ===========================
+     FAVORITES PANEL
+=========================== -->
+<div class="fav-panel-overlay" id="favPanelOverlay" role="dialog" aria-modal="true" aria-label="Saved recipes">
+  <div class="fav-panel">
+    <div class="fav-panel-header">
+      <div class="fav-panel-title">Saved ❤️</div>
+      <button class="fav-close" id="favPanelClose" aria-label="Close favorites panel">
+        <i class="fas fa-times"></i>
+      </button>
+    </div>
+    <div class="fav-list" id="favList"></div>
+  </div>
+</div>
+
+<!-- Back to Top -->
+<button id="back-top" aria-label="Back to top"><i class="fas fa-arrow-up"></i></button>
+
+<!-- Toast -->
+<div class="toast" id="toast" role="status" aria-live="polite">
+  <i class="fas fa-check-circle"></i>
+  <span id="toastMsg"></span>
+</div>
+
+<script>
+/* ===========================
+   RECIPE DATA
+=========================== */
+const RECIPES = [
+  {
+    id: 1,
+    title: "Margherita Pizza Perfection",
+    category: "Fast Food",
+    desc: "Classic Neapolitan pizza with San Marzano tomatoes, fresh mozzarella, and fragrant basil on a hand-stretched dough.",
+    image: "https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?w=800&q=80",
+    time: "35 min", difficulty: "Medium", servings: 4, rating: 4.9, calories: 320,
+    trending: true, featured: true,
+    ingredients: ["500g pizza flour", "7g dried yeast", "300ml warm water", "2 tsp salt", "2 tbsp olive oil", "400g San Marzano tomatoes", "250g fresh mozzarella", "Fresh basil leaves", "Sea salt & pepper"],
+    steps: [
+      "Mix flour, yeast, salt. Add water and oil, knead 10 minutes until smooth.",
+      "Cover and let rise in warm place for 1 hour until doubled.",
+      "Preheat oven to its highest setting with a pizza stone if you have one.",
+      "Stretch dough into a thin round on floured surface.",
+      "Spread crushed tomatoes, tear mozzarella on top.",
+      "Bake 10-12 minutes until crust is golden and cheese is bubbling.",
+      "Remove from oven, add fresh basil and a drizzle of olive oil. Serve immediately."
+    ]
+  },
+  {
+    id: 2,
+    title: "Spicy Tonkotsu Ramen",
+    category: "Fast Food",
+    desc: "Rich, creamy pork bone broth with chewy noodles, soft-boiled egg, and crispy chashu pork belly.",
+    image: "https://images.unsplash.com/photo-1569718212165-3a8278d5f624?w=800&q=80",
+    time: "4 hrs", difficulty: "Hard", servings: 2, rating: 4.8, calories: 620,
+    trending: true, featured: false,
+    ingredients: ["1kg pork bones", "200g ramen noodles", "2 soft-boiled eggs", "200g chashu pork", "3 tbsp soy sauce", "2 tbsp miso paste", "Nori sheets", "Spring onions", "Sesame seeds", "Chili oil"],
+    steps: [
+      "Blanch pork bones in boiling water for 10 minutes. Rinse thoroughly.",
+      "Simmer bones in fresh water for 3-4 hours at a rolling boil for milky broth.",
+      "Season broth with soy sauce, miso, and salt to taste.",
+      "Cook ramen noodles according to package instructions.",
+      "Assemble: pour hot broth over noodles, add toppings.",
+      "Finish with a drizzle of chili oil and sesame seeds."
+    ]
+  },
+  {
+    id: 3,
+    title: "Silky Lemon Tart",
+    category: "Desserts",
+    desc: "Buttery shortcrust pastry filled with a perfectly balanced lemon curd — bright, silky, and devastatingly good.",
+    image: "https://images.unsplash.com/photo-1551024506-0bccd828d307?w=800&q=80",
+    time: "1.5 hrs", difficulty: "Medium", servings: 8, rating: 4.7, calories: 280,
+    trending: false, featured: true,
+    ingredients: ["200g plain flour", "100g cold butter", "50g icing sugar", "3 egg yolks", "4 lemons (juice & zest)", "200g caster sugar", "150g unsalted butter", "4 large eggs", "Pinch of salt"],
+    steps: [
+      "Make pastry: rub butter into flour until breadcrumb-like. Add sugar and yolks, bring together.",
+      "Chill pastry 30 minutes. Roll out and line a 23cm tart tin.",
+      "Blind bake at 180°C for 15 minutes, then 5 more minutes without beans.",
+      "Make curd: whisk eggs, sugar, lemon juice and zest in a saucepan over low heat.",
+      "Add butter and stir until thick enough to coat a spoon.",
+      "Pour curd into cooled pastry shell. Refrigerate 2 hours until set.",
+      "Dust with icing sugar and serve with whipped cream."
+    ]
+  },
+  {
+    id: 4,
+    title: "Dark Chocolate Lava Cake",
+    category: "Desserts",
+    desc: "A warm, fudgy chocolate exterior with a molten, flowing center. Pure chocolate indulgence in 20 minutes.",
+    image: "https://images.unsplash.com/photo-1606313564200-e75d5e30476c?w=800&q=80",
+    time: "20 min", difficulty: "Easy", servings: 4, rating: 4.9, calories: 380,
+    trending: true, featured: true,
+    ingredients: ["200g dark chocolate 70%", "100g butter", "4 eggs", "4 egg yolks", "80g caster sugar", "60g plain flour", "Cocoa powder for dusting", "Vanilla ice cream to serve"],
+    steps: [
+      "Preheat oven to 200°C. Butter ramekins and dust with cocoa powder.",
+      "Melt chocolate and butter together over a bain-marie. Cool slightly.",
+      "Whisk eggs, yolks, and sugar until pale and thick.",
+      "Fold chocolate mixture into eggs, then fold in flour gently.",
+      "Pour into prepared ramekins. Refrigerate (can be done ahead).",
+      "Bake 10-12 minutes until edges are set but center still wobbles.",
+      "Turn out immediately onto plates. Serve with vanilla ice cream."
+    ]
+  },
+  {
+    id: 5,
+    title: "Avocado Green Goddess Bowl",
+    category: "Healthy",
+    desc: "Vibrant, nutrient-packed bowl with quinoa, roasted chickpeas, fresh greens, and creamy avocado dressing.",
+    image: "https://images.unsplash.com/photo-1512621776951-a57141f2eefd?w=800&q=80",
+    time: "25 min", difficulty: "Easy", servings: 2, rating: 4.6, calories: 420,
+    trending: false, featured: true,
+    ingredients: ["180g quinoa", "1 can chickpeas", "2 avocados", "100g spinach", "1 cucumber", "Cherry tomatoes", "Lemon juice", "Tahini", "Garlic clove", "Fresh herbs"],
+    steps: [
+      "Cook quinoa according to package, let cool slightly.",
+      "Roast drained chickpeas at 200°C with olive oil and spices for 25 minutes until crispy.",
+      "Blend avocado, lemon juice, tahini, garlic, and herbs for dressing.",
+      "Prep vegetables: slice cucumber, halve tomatoes, wash spinach.",
+      "Assemble bowls with quinoa base, arrange vegetables and chickpeas.",
+      "Drizzle generously with green goddess dressing. Season and serve."
+    ]
+  },
+  {
+    id: 6,
+    title: "Mango Turmeric Smoothie",
+    category: "Drinks",
+    desc: "Sunshine in a glass. Frozen mango, turmeric, coconut milk, and ginger create a golden, anti-inflammatory powerhouse.",
+    image: "https://images.unsplash.com/photo-1638176066666-ffb2f013c7dd?w=800&q=80",
+    time: "5 min", difficulty: "Easy", servings: 2, rating: 4.5, calories: 180,
+    trending: true, featured: false,
+    ingredients: ["300g frozen mango", "400ml coconut milk", "1 tsp turmeric", "1 tsp fresh ginger", "1 tbsp honey", "Juice of 1 lime", "Pinch of black pepper", "Ice cubes"],
+    steps: [
+      "Add all ingredients to a high-powered blender.",
+      "Blend on high for 60 seconds until completely smooth.",
+      "Taste and adjust sweetness with more honey if needed.",
+      "Pour into glasses over ice and serve immediately.",
+      "Optional: garnish with dried mango slice or coconut flakes."
+    ]
+  },
+  {
+    id: 7,
+    title: "Rainbow Poke Bowl",
+    category: "Healthy",
+    desc: "Hawaiian-inspired bowl with sushi-grade tuna, edamame, radish, cucumber, and umami ponzu dressing.",
+    image: "https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=800&q=80",
+    time: "20 min", difficulty: "Easy", servings: 2, rating: 4.7, calories: 490,
+    trending: true, featured: true,
+    ingredients: ["300g sushi-grade tuna", "200g sushi rice", "100g edamame", "1 avocado", "4 radishes", "1 cucumber", "Sesame seeds", "3 tbsp soy sauce", "1 tbsp sesame oil", "1 tbsp rice vinegar", "Spring onions"],
+    steps: [
+      "Cook sushi rice and season with rice vinegar and a pinch of sugar.",
+      "Cube tuna and marinate with soy sauce and sesame oil for 10 minutes.",
+      "Slice avocado, radishes, and cucumber.",
+      "Assemble bowls: rice base, arrange tuna and vegetables in sections.",
+      "Drizzle with remaining marinade and extra sesame oil.",
+      "Top with sesame seeds and sliced spring onions."
+    ]
+  },
+  {
+    id: 8,
+    title: "Classic Beef Smash Burger",
+    category: "Fast Food",
+    desc: "Crispy-edged, juicy smash patty with American cheese, pickles, and secret sauce on a toasted brioche bun.",
+    image: "https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=800&q=80",
+    time: "15 min", difficulty: "Easy", servings: 2, rating: 4.8, calories: 720,
+    trending: true, featured: true,
+    ingredients: ["400g 80/20 ground beef", "2 brioche buns", "4 slices American cheese", "Dill pickles", "White onion", "Shredded lettuce", "3 tbsp mayo", "1 tbsp ketchup", "1 tbsp mustard", "Hot sauce"],
+    steps: [
+      "Mix mayo, ketchup, mustard, and hot sauce for the secret sauce.",
+      "Divide beef into 2 x 200g balls. Season with salt and pepper.",
+      "Heat cast iron skillet until smoking. Add beef balls.",
+      "Immediately smash flat with a spatula. Cook 2 minutes until edges are crispy.",
+      "Flip, add cheese, cook 1 more minute.",
+      "Toast buns in the same pan. Build burger with sauce, pickles, onion, and lettuce."
+    ]
+  },
+  {
+    id: 9,
+    title: "Matcha Ceremonial Latte",
+    category: "Drinks",
+    desc: "Velvety, frothy matcha latte made with ceremonial-grade powder and oat milk for the perfect umami-sweet balance.",
+    image: "https://images.unsplash.com/photo-1536256263959-770b48d82b0a?w=800&q=80",
+    time: "5 min", difficulty: "Easy", servings: 1, rating: 4.6, calories: 90,
+    trending: false, featured: false,
+    ingredients: ["2 tsp ceremonial grade matcha", "60ml hot water (not boiling)", "200ml oat milk", "1 tsp honey or maple syrup", "Pinch of vanilla"],
+    steps: [
+      "Sift matcha into a bowl to remove lumps.",
+      "Add hot water (80°C) and whisk in a W motion until frothy.",
+      "Warm oat milk and froth with a milk frother.",
+      "Pour matcha into a glass or mug.",
+      "Pour frothed milk over, sweeten to taste, serve immediately."
+    ]
+  },
+  {
+    id: 10,
+    title: "Thai Green Curry",
+    category: "Healthy",
+    desc: "Fragrant, creamy coconut curry with tender chicken, vibrant vegetables, and aromatic Thai basil over jasmine rice.",
+    image: "https://images.unsplash.com/photo-1455619452474-d2be8b1e70cd?w=800&q=80",
+    time: "30 min", difficulty: "Medium", servings: 4, rating: 4.7, calories: 540,
+    trending: false, featured: false,
+    ingredients: ["500g chicken breast", "400ml coconut milk", "2 tbsp green curry paste", "1 red pepper", "100g green beans", "Baby aubergine", "Fish sauce", "Palm sugar", "Thai basil", "Lime", "Jasmine rice"],
+    steps: [
+      "Cook jasmine rice according to package instructions.",
+      "Fry curry paste in a wok with a splash of coconut milk for 2 minutes.",
+      "Add sliced chicken, cook until sealed.",
+      "Pour in remaining coconut milk, add vegetables.",
+      "Simmer 12-15 minutes until chicken is cooked and sauce is fragrant.",
+      "Season with fish sauce and palm sugar. Finish with Thai basil and lime juice.",
+      "Serve over jasmine rice."
+    ]
+  },
+  {
+    id: 11,
+    title: "Tiramisu Classico",
+    category: "Desserts",
+    desc: "The definitive Italian pick-me-up: coffee-soaked savoiardi, rich mascarpone cream, and a dusting of dark cocoa.",
+    image: "https://images.unsplash.com/photo-1571877227200-a0d98ea607e9?w=800&q=80",
+    time: "30 min + chill", difficulty: "Medium", servings: 8, rating: 4.9, calories: 350,
+    trending: false, featured: false,
+    ingredients: ["400g mascarpone", "300g savoiardi (ladyfingers)", "4 eggs, separated", "100g caster sugar", "300ml strong espresso, cooled", "4 tbsp Marsala wine", "Dark cocoa powder for dusting"],
+    steps: [
+      "Beat egg yolks with sugar until pale and fluffy. Fold in mascarpone.",
+      "Whip egg whites to stiff peaks, gently fold into mascarpone mixture.",
+      "Mix cooled espresso with Marsala wine.",
+      "Quickly dip savoiardi in coffee mixture (don't soak).",
+      "Layer biscuits in a dish, top with half the cream. Repeat layers.",
+      "Dust generously with cocoa. Refrigerate minimum 4 hours or overnight."
+    ]
+  },
+  {
+    id: 12,
+    title: "Elderflower Lemonade",
+    category: "Drinks",
+    desc: "Delicate, floral, and incredibly refreshing. Homemade elderflower cordial meets sparkling water and fresh lemon.",
+    image: "https://images.unsplash.com/photo-1513558161293-cdaf765ed2fd?w=800&q=80",
+    time: "10 min", difficulty: "Easy", servings: 4, rating: 4.5, calories: 95,
+    trending: false, featured: false,
+    ingredients: ["100ml elderflower cordial", "Juice of 3 lemons", "600ml sparkling water", "Fresh mint", "Ice cubes", "Lemon slices for garnish"],
+    steps: [
+      "Add elderflower cordial and lemon juice to a large pitcher.",
+      "Stir gently to combine.",
+      "Add plenty of ice cubes.",
+      "Pour in sparkling water slowly to preserve fizz.",
+      "Add mint sprigs and lemon slices. Stir very gently and serve."
+    ]
+  }
+];
+
+/* ===========================
+   CATEGORIES DATA
+=========================== */
+const CATEGORIES = [
+  { name: "All", icon: "🍽️", color: "#ff6b35" },
+  { name: "Fast Food", icon: "🍔", color: "#ff9f1c" },
+  { name: "Healthy", icon: "🥗", color: "#06d6a0" },
+  { name: "Desserts", icon: "🍰", color: "#e63c7a" },
+  { name: "Drinks", icon: "🥤", color: "#4cc9f0" },
+  { name: "Italian", icon: "🍝", color: "#f77f00" },
+  { name: "Trending", icon: "🔥", color: "#ff4d4d" },
+  { name: "Favorites", icon: "❤️", color: "#ff6b6b" }
+];
+
+/* ===========================
+   TESTIMONIALS DATA
+=========================== */
+const TESTIMONIALS = [
+  { name: "Aisha Rahman", role: "Home Cook · Mumbai", avatar: "👩🏽‍🍳", stars: 5, quote: "FlavorHunt completely changed how I cook. The recipes are genuinely tested and the instructions are so clear. I've made the lemon tart three times already!" },
+  { name: "James O'Connor", role: "Food Blogger · Dublin", avatar: "👨🏻‍💻", stars: 5, quote: "As a food blogger I've tried dozens of recipe sites. FlavorHunt's design and curation is in a league of its own. The save feature keeps my workflow effortless." },
+  { name: "Priya Menon", role: "Yoga Instructor · Bangalore", avatar: "🧘🏽‍♀️", stars: 5, quote: "The Healthy category is incredible. I've been making the Rainbow Poke Bowl every week. Clean, nutritious, and actually delicious — that's hard to find." },
+  { name: "Tomás Díaz", role: "Chef · Barcelona", avatar: "👨🏻‍🍳", stars: 5, quote: "Even as a professional chef I find FlavorHunt inspiring. The recipe diversity is exceptional and the photography makes everything look exactly as it should taste." },
+  { name: "Mei Lin", role: "Student · Singapore", avatar: "👩🏻‍🎓", stars: 5, quote: "Perfect for beginners! The smash burger recipe was my first ever cooking attempt and it turned out restaurant-quality. The step-by-step instructions are foolproof." },
+  { name: "Kwame Asante", role: "Dad of 3 · Accra", avatar: "👨🏿‍👦", stars: 5, quote: "I use FlavorHunt to cook for my kids every weekend. The search is instant, the recipes are reliable, and the favorites panel means I never lose a good one." }
+];
+
+/* ===========================
+   STATE
+=========================== */
+let currentCategory = "All";
+let searchQuery = "";
+let favorites = JSON.parse(localStorage.getItem("fh_favorites") || "[]");
+let currentRecipeId = null;
+
+/* ===========================
+   INIT
+=========================== */
+document.addEventListener("DOMContentLoaded", () => {
+  // Hide loader after animation
+  setTimeout(() => {
+    document.getElementById("loader").classList.add("hidden");
+  }, 2000);
+
+  renderCategories();
+  renderTrending();
+  renderRecipes();
+  renderTestimonials();
+  updateFavCount();
+  initScrollObserver();
+  initNavbar();
+  initSearch();
+  initModal();
+  initFavPanel();
+  initBackTop();
+});
+
+/* ===========================
+   CATEGORIES
+=========================== */
+function renderCategories() {
+  const grid = document.getElementById("categoriesGrid");
+  grid.innerHTML = CATEGORIES.map(cat => {
+    const count = cat.name === "All" ? RECIPES.length
+      : cat.name === "Trending" ? RECIPES.filter(r => r.trending).length
+      : cat.name === "Favorites" ? favorites.length
+      : RECIPES.filter(r => r.category === cat.name).length;
+
+    return `
+      <div class="cat-card ${currentCategory === cat.name ? 'active' : ''}"
+           role="listitem" tabindex="0"
+           aria-label="${cat.name} category, ${count} recipes"
+           onclick="selectCategory('${cat.name}')"
+           onkeypress="if(event.key==='Enter')selectCategory('${cat.name}')">
+        <div class="cat-icon">${cat.icon}</div>
+        <div class="cat-name">${cat.name}</div>
+        <div class="cat-count">${count} recipes</div>
+      </div>
+    `;
+  }).join("");
+}
+
+function selectCategory(name) {
+  currentCategory = name;
+  searchQuery = "";
+  document.getElementById("searchInput").value = "";
+  document.getElementById("searchClear").classList.remove("visible");
+  renderCategories();
+  renderRecipes();
+  document.getElementById("recipes").scrollIntoView({ behavior: "smooth" });
+
+  if (name === "All") {
+    document.getElementById("recipesHeading").textContent = "All Recipes";
+    document.getElementById("recipesSub").textContent = "From quick weeknight dinners to weekend showstoppers.";
+  } else {
+    document.getElementById("recipesHeading").textContent = name === "Favorites" ? "Your Saved Recipes" : `${name} Recipes`;
+    document.getElementById("recipesSub").textContent = `Showing our best ${name.toLowerCase()} picks.`;
+  }
+}
+
+/* ===========================
+   TRENDING
+=========================== */
+function renderTrending() {
+  const scroll = document.getElementById("trendingScroll");
+  const trending = RECIPES.filter(r => r.trending);
+  scroll.innerHTML = trending.map((r, i) => `
+    <div class="trending-card" role="listitem" tabindex="0"
+         aria-label="Trending: ${r.title}"
+         onclick="openRecipeById(${r.id})"
+         onkeypress="if(event.key==='Enter')openRecipeById(${r.id})">
+      <div class="trending-card-img" style="background-image:url('${r.image}')">
+        <div class="trending-rank">${i + 1}</div>
+      </div>
+      <div class="trending-card-body">
+        <div class="trending-card-title">${r.title}</div>
+        <div class="trending-card-meta">
+          <i class="fas fa-clock" style="color:var(--accent);margin-right:4px"></i>${r.time} &nbsp;·&nbsp;
+          <i class="fas fa-fire" style="color:var(--accent2);margin-right:4px"></i>${r.calories} cal
+        </div>
+      </div>
+    </div>
+  `).join("");
+}
+
+/* ===========================
+   RECIPES GRID
+=========================== */
+function getFilteredRecipes() {
+  let list = RECIPES;
+
+  if (currentCategory === "Trending") {
+    list = list.filter(r => r.trending);
+  } else if (currentCategory === "Favorites") {
+    list = list.filter(r => favorites.includes(r.id));
+  } else if (currentCategory !== "All") {
+    list = list.filter(r => r.category === currentCategory);
+  }
+
+  if (searchQuery) {
+    const q = searchQuery.toLowerCase();
+    list = list.filter(r =>
+      r.title.toLowerCase().includes(q) ||
+      r.desc.toLowerCase().includes(q) ||
+      r.category.toLowerCase().includes(q) ||
+      r.ingredients.some(ing => ing.toLowerCase().includes(q))
+    );
+  }
+
+  return list;
+}
+
+function renderRecipes() {
+  const grid = document.getElementById("recipesGrid");
+  const empty = document.getElementById("empty-state");
+  const list = getFilteredRecipes();
+
+  if (list.length === 0) {
+    grid.innerHTML = "";
+    empty.classList.add("visible");
+    return;
+  }
+
+  empty.classList.remove("visible");
+  grid.innerHTML = list.map(r => `
+    <article class="recipe-card reveal" role="listitem"
+             tabindex="0"
+             aria-label="Recipe: ${r.title}"
+             onclick="openRecipeById(${r.id})"
+             onkeypress="if(event.key==='Enter')openRecipeById(${r.id})">
+      <div class="recipe-img-wrap">
+        <div class="recipe-img" style="background-image:url('${r.image}')" role="img" aria-label="${r.title} photo"></div>
+        <span class="recipe-category-badge">${r.category}</span>
+        <button class="recipe-fav-btn ${favorites.includes(r.id) ? 'active' : ''}"
+                aria-label="${favorites.includes(r.id) ? 'Remove from' : 'Add to'} favorites"
+                onclick="event.stopPropagation();toggleFav(${r.id})">
+          <i class="fas fa-heart"></i>
+        </button>
+      </div>
+      <div class="recipe-body">
+        <h3 class="recipe-title">${r.title}</h3>
+        <p class="recipe-desc">${r.desc}</p>
+        <div class="recipe-meta">
+          <span class="recipe-meta-item"><i class="fas fa-clock"></i>${r.time}</span>
+          <span class="recipe-meta-item"><i class="fas fa-signal"></i>${r.difficulty}</span>
+          <span class="recipe-meta-item"><i class="fas fa-fire-flame-curved"></i>${r.calories} cal</span>
+          <span class="recipe-rating">
+            <i class="fas fa-star"></i> ${r.rating}
+          </span>
+        </div>
+      </div>
+    </article>
+  `).join("");
+
+  // Re-run observer for new cards
+  setTimeout(() => {
+    document.querySelectorAll(".reveal").forEach(el => {
+      if (observer) observer.observe(el);
+    });
+  }, 50);
+}
+
+function resetFilters() {
+  currentCategory = "All";
+  searchQuery = "";
+  document.getElementById("searchInput").value = "";
+  document.getElementById("searchClear").classList.remove("visible");
+  document.getElementById("recipesHeading").textContent = "All Recipes";
+  document.getElementById("recipesSub").textContent = "From quick weeknight dinners to weekend showstoppers.";
+  renderCategories();
+  renderRecipes();
+}
+
+/* ===========================
+   SEARCH
+=========================== */
+function initSearch() {
+  const input = document.getElementById("searchInput");
+  const clear = document.getElementById("searchClear");
+
+  input.addEventListener("input", () => {
+    searchQuery = input.value.trim();
+    clear.classList.toggle("visible", searchQuery.length > 0);
+    renderRecipes();
+    if (searchQuery) {
+      document.getElementById("recipes").scrollIntoView({ behavior: "smooth" });
+    }
+  });
+
+  clear.addEventListener("click", () => {
+    input.value = "";
+    searchQuery = "";
+    clear.classList.remove("visible");
+    renderRecipes();
+  });
+}
+
+function quickSearch(term) {
+  const input = document.getElementById("searchInput");
+  input.value = term;
+  searchQuery = term;
+  document.getElementById("searchClear").classList.add("visible");
+  currentCategory = "All";
+  renderCategories();
+  renderRecipes();
+  document.getElementById("recipes").scrollIntoView({ behavior: "smooth" });
+}
+
+/* ===========================
+   FAVORITES
+=========================== */
+function toggleFav(id) {
+  const idx = favorites.indexOf(id);
+  if (idx === -1) {
+    favorites.push(id);
+    showToast("Added to favorites ❤️");
+  } else {
+    favorites.splice(idx, 1);
+    showToast("Removed from favorites");
+  }
+  localStorage.setItem("fh_favorites", JSON.stringify(favorites));
+  updateFavCount();
+  renderRecipes();
+  renderCategories();
+  if (currentRecipeId) updateModalFavBtn();
+  renderFavPanel();
+}
+
+function updateFavCount() {
+  const n = favorites.length;
+  document.getElementById("favCount").textContent = `(${n})`;
+  document.getElementById("favCountMobile").textContent = `(${n})`;
+}
+
+/* ===========================
+   MODAL
+=========================== */
+function initModal() {
+  document.getElementById("modalClose").addEventListener("click", closeModal);
+  document.getElementById("modalOverlay").addEventListener("click", e => {
+    if (e.target === document.getElementById("modalOverlay")) closeModal();
+  });
+  document.addEventListener("keydown", e => {
+    if (e.key === "Escape") closeModal();
+  });
+}
+
+function openRecipeById(id) {
+  const recipe = RECIPES.find(r => r.id === id);
+  if (!recipe) return;
+  currentRecipeId = id;
+
+  document.getElementById("modalHero").style.backgroundImage = `url('${recipe.image}')`;
+  document.getElementById("modalBadge").textContent = recipe.category;
+  document.getElementById("modalTitle").textContent = recipe.title;
+
+  document.getElementById("modalMeta").innerHTML = `
+    <span class="modal-meta-item"><i class="fas fa-clock"></i>${recipe.time}</span>
+    <span class="modal-meta-item"><i class="fas fa-signal"></i>${recipe.difficulty}</span>
+    <span class="modal-meta-item"><i class="fas fa-users"></i>${recipe.servings} servings</span>
+    <span class="modal-meta-item"><i class="fas fa-fire-flame-curved"></i>${recipe.calories} cal</span>
+    <span class="modal-meta-item"><i class="fas fa-star" style="color:var(--accent2)"></i>${recipe.rating}</span>
+  `;
+
+  document.getElementById("modalIngredients").innerHTML = recipe.ingredients.map(ing =>
+    `<div class="ingredient-item"><i class="fas fa-circle-check"></i>${ing}</div>`
+  ).join("");
+
+  document.getElementById("modalSteps").innerHTML = recipe.steps.map((step, i) =>
+    `<li class="step-item"><div class="step-num">${i + 1}</div><div>${step}</div></li>`
+  ).join("");
+
+  updateModalFavBtn();
+  document.getElementById("modalOverlay").classList.add("open");
+  document.body.style.overflow = "hidden";
+  document.getElementById("modalClose").focus();
+}
+
+function updateModalFavBtn() {
+  const btn = document.getElementById("modalFavBtn");
+  const isFav = favorites.includes(currentRecipeId);
+  btn.className = `modal-fav-btn ${isFav ? "active" : ""}`;
+  btn.innerHTML = `<i class="fas fa-heart"></i> ${isFav ? "Saved!" : "Save to Favorites"}`;
+  btn.onclick = () => toggleFav(currentRecipeId);
+}
+
+function closeModal() {
+  document.getElementById("modalOverlay").classList.remove("open");
+  document.body.style.overflow = "";
+  currentRecipeId = null;
+}
+
+/* ===========================
+   FAV PANEL
+=========================== */
+function initFavPanel() {
+  document.getElementById("favBtn").addEventListener("click", openFavPanel);
+  document.getElementById("favPanelClose").addEventListener("click", closeFavPanel);
+  document.getElementById("favPanelOverlay").addEventListener("click", e => {
+    if (e.target === document.getElementById("favPanelOverlay")) closeFavPanel();
+  });
+}
+
+function openFavPanel() {
+  renderFavPanel();
+  document.getElementById("favPanelOverlay").classList.add("open");
+  document.body.style.overflow = "hidden";
+  document.getElementById("favPanelClose").focus();
+}
+
+function closeFavPanel() {
+  document.getElementById("favPanelOverlay").classList.remove("open");
+  document.body.style.overflow = "";
+}
+
+function renderFavPanel() {
+  const list = document.getElementById("favList");
+  const favRecipes = RECIPES.filter(r => favorites.includes(r.id));
+
+  if (favRecipes.length === 0) {
+    list.innerHTML = `
+      <div class="fav-empty">
+        <i class="fas fa-heart"></i>
+        <div>No saved recipes yet.</div>
+        <p style="font-size:0.82rem;margin-top:8px">Tap the ♥ on any recipe card to save it here.</p>
+      </div>`;
+    return;
+  }
+
+  list.innerHTML = favRecipes.map(r => `
+    <div class="fav-item" tabindex="0"
+         aria-label="Saved recipe: ${r.title}"
+         onclick="openRecipeById(${r.id});closeFavPanel()"
+         onkeypress="if(event.key==='Enter'){openRecipeById(${r.id});closeFavPanel()}">
+      <div class="fav-item-img" style="background-image:url('${r.image}')" role="img" aria-label="${r.title}"></div>
+      <div>
+        <div class="fav-item-title">${r.title}</div>
+        <div class="fav-item-meta"><i class="fas fa-clock" style="margin-right:4px;color:var(--accent)"></i>${r.time} &nbsp;·&nbsp; ${r.category}</div>
+      </div>
+      <button class="fav-remove" aria-label="Remove ${r.title} from favorites"
+              onclick="event.stopPropagation();toggleFav(${r.id})">
+        <i class="fas fa-times"></i>
+      </button>
+    </div>
+  `).join("");
+}
+
+/* ===========================
+   TESTIMONIALS
+=========================== */
+function renderTestimonials() {
+  const grid = document.getElementById("testiGrid");
+  grid.innerHTML = TESTIMONIALS.map(t => `
+    <div class="testi-card reveal">
+      <div class="testi-stars">${"★".repeat(t.stars)}</div>
+      <p class="testi-quote">"${t.quote}"</p>
+      <div class="testi-author">
+        <div class="testi-avatar">${t.avatar}</div>
+        <div>
+          <div class="testi-name">${t.name}</div>
+          <div class="testi-role">${t.role}</div>
+        </div>
+      </div>
+    </div>
+  `).join("");
+
+  setTimeout(() => {
+    document.querySelectorAll(".reveal").forEach(el => {
+      if (observer) observer.observe(el);
+    });
+  }, 50);
+}
+
+/* ===========================
+   NAVBAR SCROLL
+=========================== */
+function initNavbar() {
+  const nav = document.getElementById("navbar");
+  window.addEventListener("scroll", () => {
+    nav.classList.toggle("scrolled", window.scrollY > 20);
+  }, { passive: true });
+}
+
+/* ===========================
+   HAMBURGER
+=========================== */
+const hamburger = document.getElementById("hamburger");
+const mobileMenu = document.getElementById("mobileMenu");
+
+hamburger.addEventListener("click", () => {
+  const isOpen = mobileMenu.classList.toggle("open");
+  hamburger.classList.toggle("open", isOpen);
+  hamburger.setAttribute("aria-expanded", isOpen);
+});
+
+function closeMobileMenu() {
+  mobileMenu.classList.remove("open");
+  hamburger.classList.remove("open");
+  hamburger.setAttribute("aria-expanded", "false");
+}
+
+/* ===========================
+   THEME TOGGLE
+=========================== */
+document.getElementById("themeToggle").addEventListener("click", () => {
+  const html = document.documentElement;
+  const isDark = html.getAttribute("data-theme") === "dark";
+  html.setAttribute("data-theme", isDark ? "light" : "dark");
+  document.getElementById("themeIcon").className = isDark ? "fas fa-sun" : "fas fa-moon";
+});
+
+/* ===========================
+   SCROLL OBSERVER
+=========================== */
+let observer;
+function initScrollObserver() {
+  observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add("visible");
+        observer.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.1, rootMargin: "0px 0px -40px 0px" });
+
+  document.querySelectorAll(".reveal").forEach(el => observer.observe(el));
+}
+
+/* ===========================
+   BACK TO TOP
+=========================== */
+function initBackTop() {
+  const btn = document.getElementById("back-top");
+  window.addEventListener("scroll", () => {
+    btn.classList.toggle("visible", window.scrollY > 400);
+  }, { passive: true });
+  btn.addEventListener("click", () => window.scrollTo({ top: 0, behavior: "smooth" }));
+}
+
+/* ===========================
+   TOAST
+=========================== */
+let toastTimer;
+function showToast(msg) {
+  const toast = document.getElementById("toast");
+  document.getElementById("toastMsg").textContent = msg;
+  toast.classList.add("show");
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => toast.classList.remove("show"), 2800);
+}
+
+/* ===========================
+   NEWSLETTER
+=========================== */
+function handleNewsletter() {
+  const input = document.querySelector(".newsletter-input");
+  if (!input.value || !input.value.includes("@")) {
+    showToast("Please enter a valid email.");
+    return;
+  }
+  input.value = "";
+  showToast("You're subscribed! 🎉 Welcome to FlavorHunt.");
+}
+</script>
+</body>
+</html>
